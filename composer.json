@@ -1,0 +1,16 @@
+{
+    "name": "atomino/gold",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "laborci",
+            "email": "gergely@laborci.hu"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Atomino\\Gold\\": "src/"
+        }
+    }
+}
