@@ -156,7 +156,7 @@ class GoldApi extends Api {
 
 		$items = ($this->entity)::search($filter)->order(...$order)->page($pagesize, $page, $count);
 		if (count($items) === 0) {
-			$page = ceil($count / $pagesize);
+			$page = max(1, ceil($count / $pagesize));
 			$items = ($this->entity)::search($filter)->order(...$order)->page($pagesize, $page, $count);
 		}
 		return ["items" => array_map(fn(Entity $item) => $this->listExport($item), $items), "count" => $count, "page" => $page];
