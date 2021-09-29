@@ -111,7 +111,13 @@ class GoldApi extends Api {
 	#[Route("POST", '/delete/:id([0-9]+)')]
 	public function delete(int $id) {
 		if (is_null($item = $this->getItem($id))) return;
-		$this->deleteItem($item);
+		try{
+			$this->deleteItem($item);
+		}catch (\Throwable $exception){
+			debug("can not delete");
+			$this->setStatusCode(Api::VALIDATION_ERROR);
+			return [["field"=>"", "message"=>"Can not delete the item"]];
+		}
 	}
 
 	#[Route("POST", '/get/:id([0-9]+)')]
