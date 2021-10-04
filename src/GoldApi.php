@@ -153,6 +153,7 @@ class GoldApi extends Api {
 			$filter = is_null($filter) ? $quicksearch : $filter->and($quicksearch);
 		}
 
+		$method = null;
 		if (!is_null($sorting)) {
 			$dir = substr($sorting, 0, 1) === '+';
 			$sorting = substr($sorting, 1);
