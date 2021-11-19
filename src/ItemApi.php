@@ -10,11 +10,15 @@ use function Atomino\debug;
 
 class ItemApi extends AbstractApi {
 
+	const UPDATE = "update";
+	const CREATE = "create";
+
 	protected function export(Entity $item): array { return $item->export(); }
+	protected function import(Entity $item, array $data, string $method): Entity { return $item->import($data); }
 	/** @throws ValidationError */
-	protected function update(Entity $item, array $data): int|null { return $item->import($data)->save(); }
+	protected function update(Entity $item, array $data): int|null { return $this->import($item, $data, static::UPDATE)->save(); }
 	/** @throws ValidationError */
-	protected function create(Entity $item, array $data): int|null { return $item->import($data)->save(); }
+	protected function create(Entity $item, array $data): int|null { return $this->import($item, $data, static::CREATE)->save(); }
 	protected function delete(Entity $item) { $item->delete(); }
 	protected function blank() { return ($this->entity)::create(); }
 	protected function get(int|null $id): Entity|null {
@@ -22,11 +26,22 @@ class ItemApi extends AbstractApi {
 		if (is_null($item)) $this->setStatusCode(404);
 		return $item;
 	}
+	protected function options(Entity $item): array|null { return null; }
 
 	#[Route("POST", '/get/:id([0-9]+)')]
 	public final function POST_get(int $id): array|null {
 		if (is_null($item = $this->get($id))) return null;
-		return $this->export($item);
+		$options = $this->options($item);
+		if (is_null($options)) {
+			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "basic"]);
+			return $this->export($item);
+		} else {
+			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "complex"]);
+			return [
+				"options" => $options,
+				"item"    => $this->export($item),
+			];
+		}
 	}
 
 	#[Route("POST", '/blank')]
