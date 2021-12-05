@@ -26,11 +26,9 @@ class ItemApi extends AbstractApi {
 		if (is_null($item)) $this->setStatusCode(404);
 		return $item;
 	}
-	protected function options(Entity $item): array|null { return null; }
+	protected function options(Entity|null $item): array|null { return null; }
 
-	#[Route("POST", '/get/:id([0-9]+)')]
-	public final function POST_get(int $id): array|null {
-		if (is_null($item = $this->get($id))) return null;
+	private function itemResult(Entity $item):array|null{
 		$options = $this->options($item);
 		if (is_null($options)) {
 			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "basic"]);
@@ -44,20 +42,20 @@ class ItemApi extends AbstractApi {
 		}
 	}
 
+	#[Route("POST", '/options')]
+	public final function POST_options(): array {
+		return $this->options(null);
+	}
+
+	#[Route("POST", '/get/:id([0-9]+)')]
+	public final function POST_get(int $id): array|null {
+		if (is_null($item = $this->get($id))) return null;
+		return $this->itemResult($item);
+	}
+
 	#[Route("POST", '/blank')]
 	public final function POST_blank(): array {
-		$item = $this->export($this->blank());
-		$options = $this->options($item);
-		if (is_null($options)) {
-			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "basic"]);
-			return $this->export($item);
-		} else {
-			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "complex"]);
-			return [
-				"options" => $options,
-				"item"    => $this->export($item),
-			];
-		}
+		return $this->itemResult($this->blank());
 	}
 
 	#[Route("POST", '/create')]
