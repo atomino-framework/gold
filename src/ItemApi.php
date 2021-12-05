@@ -46,7 +46,17 @@ class ItemApi extends AbstractApi {
 
 	#[Route("POST", '/blank')]
 	public final function POST_blank(): array {
-		return $this->export($this->blank());
+		$item = $this->export($this->blank());
+		if (is_null($options)) {
+			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "basic"]);
+			return $this->export($item);
+		} else {
+			$this->getResponse()->headers->add(["X-Gold-Form-Response-Type" => "complex"]);
+			return [
+				"options" => $options,
+				"item"    => $this->export($item),
+			];
+		}
 	}
 
 	#[Route("POST", '/create')]
