@@ -38,6 +38,6 @@ class Gold extends Router {
 		$this("POST", "/item/**")?->pipe($this->itemApi());
 		$this("POST", "/attachment/**")?->pipe($this->attachmentApi());
 		$this("POST", "/collection/**")?->pipe($this->collectionApi());
-		if (!is_null($customApi = $this->customApi())) $this("POST", "/**")?->pipe($customApi);
+		if (!is_null($customApi = $this->customApi())) $this(path:"/**")?->pipe($customApi);
 	}
 }
